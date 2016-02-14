@@ -27,7 +27,7 @@ show_page_parts = (page_parts) ->
     $('.horizontal-form-group.page-part[data-name=' + page_part + ']').show()
 
 # Dynamically add and remove fields in a nested form
-$(document).on 'click', 'form .add_fields', (event) ->
+$(document).on 'click', 'form .add_fields_spina', (event) ->
   time = new Date().getTime()
   regexp = new RegExp($(this).data('id'), 'g')
   $(this).before($(this).data('fields').replace(regexp, time))

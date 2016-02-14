@@ -14,7 +14,7 @@ module Spina
       end
 
       def add_fields_class(object)
-        structure_item?(object) ? 'add_structure' : 'add_fields'
+        structure_item?(object) ? 'add_structure' : 'add_fields_spina'
       end
 
       def structure_item?(object)

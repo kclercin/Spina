@@ -27,7 +27,7 @@ module Spina
       fields = f.fields_for(association, new_object, child_index: id) do |builder|
         render(association.to_s.singularize + "_fields", f: builder)
       end
-      link_to(name, '#', class: "add_fields button button-primary button-link", data: {id: id, fields: fields.gsub("\n", ""), icon: '&'})
+      link_to(name, '#', class: "add_fields_spina button button-primary button-link", data: {id: id, fields: fields.gsub("\n", ""), icon: '&'})
     end
 
     def current_account
