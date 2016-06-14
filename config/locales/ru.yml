@@ -33,20 +33,6 @@ ru:
       documents: Документы
       photos: Изображения
 
-    inquiries:
-      title: Сообщения
-      all: Все сообщения
-      all_description: Все сообщения
-      delete_confirmation: "Вы уверены, что хотите удалить <strong>%{subject}</strong> сообщение?"
-      empty: У вас нет входящих сообщений
-      empty_inbox: У вас нет входящих сообщений
-      empty_spam: "У вас нет сообщений, помеченных как спам"
-      inbox: Входящие
-      inbox_description: Входящие сообщения
-      mark_as_read: Пометить как прочитанное
-      no_spam: Не спам
-      spam: Спам
-
     pages:
       new: Новая страница
       create_page: "Создать %{template}"
@@ -92,9 +78,6 @@ ru:
       account: Общее
       account_description: Персональные параметры
       account_save: Сохранить параметры
-      aviary: Вольер
-      aviary_description: Настройки вольера
-      aviary_save: Сохранить параметры
       style: Дизайн
       style_description: Выберите тему
       style_save: Сохранить параметры стиля
@@ -113,23 +96,32 @@ ru:
       insert: 'Вставить документ'
       insert_multiple: 'Вставить документы'
 
+    media_library:
+      photos: Изображения
+      attachments: Документы
+
   activerecord:
     models:
       spina/page:
         one: Страница
-        other: Страницы
+        few: Страницы
+        many: Страниц
+        other: Страниц
       spina/user:
         one: Пользователь
-        other: Пользователи
+        few: Пользователея
+        many: Пользователей
+        other: Пользователей
       spina/photo:
         one: Изображение
-        other: Изображения
+        few: Изображения
+        many: Изображений
+        other: Изображений
       spina/attachment:
         one: Документ
-        other: Документы
-      spina/inquiry:
-        one: Сообщение
-        other: Сообщения
+        few: Документа
+        many: Документов
+        other: Документов
 
     attributes:
       spina/account:
@@ -156,12 +148,6 @@ ru:
         created_at: Создан в
         name: Название файла
         size: Размер
-
-      spina/inquiries:
-        email: Почта
-        name: от
-        message: Сообщение
-        phone: Телефон
 
       spina/page:
         title: Заголовок

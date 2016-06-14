@@ -2,9 +2,17 @@
 
 homepage:
   name: homepage
-  title: Homepage
-  materialized_path: /
+  deletable: false
+  draft: false
+  active: true
+
 
 about:
-  title: About
-  materialized_path: /about
+  name: about
+  deletable: false
+
+demo:
+  name: demo
+  deletable: true
+  draft: false
+  active: false

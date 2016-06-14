@@ -1,0 +1,18 @@
+%nav#primary
+  %ul
+    %li{class: ('active' if (%w[pages photos attachments] + Spina::Plugin.all.map { |plugin| plugin.namespace if current_theme.plugins.include?(plugin.name) }).include? controller_name)}
+      = link_to spina.admin_pages_path do
+        = icon('home')
+
+    - Spina::Plugin.all.each do |plugin|
+      - if current_theme.plugins.include? plugin.name
+        - if lookup_context.exists? "spina/admin/hooks/#{ plugin.namespace }/_primary_navigation"
+          = render "spina/admin/hooks/#{ plugin.namespace }/primary_navigation", plugin: plugin
+
+    %li{class: ('active' if %w[accounts users tenants].include? controller_name)}
+      = link_to spina.edit_admin_account_path do
+        = icon('cog')
+
+    %li.bottom
+      = link_to spina.admin_logout_path, data: {no_turbolink: true} do
+        = icon('power-off')

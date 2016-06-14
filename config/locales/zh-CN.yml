@@ -92,9 +92,6 @@ zh-CN:
       account: 通用
       account_description: 个人设置
       account_save: 保存设置
-      aviary: Aviary
-      aviary_description: 设置 aviary
-      aviary_save: 保存设置
       style: 样式
       style_description: 选择主题
       style_save: 保存样式
@@ -112,6 +109,10 @@ zh-CN:
     attachments:
       insert: '插入文档'
       insert_multiple: '插入多个文档'
+
+    media_library:
+      photos: 所有图片
+      attachments: 所有文档
 
   activerecord:
     models:

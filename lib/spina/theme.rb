@@ -1,21 +1,49 @@
 module Spina
   class Theme
 
-    attr_accessor :name, :config, :public_theme
+    attr_accessor :name, :title, :page_parts, :structures, :view_templates, :layout_parts, :custom_pages, :plugins, :public_theme, :config
 
-    def to_s
-      name
+    class << self
+
+      def all
+        ::Spina::THEMES
+      end
+
+      def find_by_name(name)
+        all.find { |theme| theme.name == name }
+      end
+
+      def register
+        theme = ::Spina::Theme.new
+        yield theme
+        raise 'Missing theme name' if theme.name.nil?
+        if theme.plugins.nil?
+          theme.plugins = ::Spina::Plugin.all.map { |plugin| plugin.name }
+        end
+        all << theme
+      end
+
+    end
+
+    def initialize
+      @page_parts       = []
+      @structures       = []
+      @layout_parts     = []
+      @view_templates   = []
+      @custom_pages     = []
+      @public_theme = false
     end
 
     def new_page_templates
-      config.view_templates.map do |view_template|
-        [view_template[0], view_template[1][:title], view_template[1][:description], view_template[1][:usage]] unless is_custom_undeletable_page?(view_template[0])
+      @view_templates.map do |view_template|
+        [view_template[:name], view_template[:title], view_template[:description], view_template[:usage]] unless is_custom_undeletable_page?(view_template[:name])
       end.compact
     end
 
     # Check if view_template is defined as a custom undeletable page
     def is_custom_undeletable_page?(view_template)
-      config.custom_pages.any? { |page| page[:view_template] == view_template && !page[:deletable] }
+      @custom_pages.any? { |page| page[:view_template] == view_template && !page[:deletable] }
     end
+
   end
 end

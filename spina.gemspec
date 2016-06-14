@@ -14,10 +14,10 @@ Gem::Specification.new do |s|
   s.description = 'CMS'
   s.licenses    = ['MIT']
 
-  s.files = Dir['{app,config,db,lib,test}/**/*'] + ['Rakefile', 'README.md']
+  s.files = Dir['{app,config,db,lib}/**/*'] + ['Rakefile', 'README.md']
   # s.test_files = Dir['test/**/*']
 
-  s.add_dependency 'rails', '~> 4.0'
+  s.add_dependency 'rails', '>= 4.0'
   s.add_dependency 'bcrypt'
   s.add_dependency 'haml-rails'
   s.add_dependency 'sass-rails'
@@ -28,10 +28,11 @@ Gem::Specification.new do |s|
   s.add_dependency 'mini_magick'
   s.add_dependency 'cancan'
   s.add_dependency 'filters_spam'
-  s.add_dependency 'negative_captcha'
   s.add_dependency 'ancestry'
   s.add_dependency 'breadcrumbs_on_rails'
   s.add_dependency 'spina-template'
   s.add_dependency 'turbolinks'
   s.add_dependency 'kaminari'
+  s.add_dependency 'globalize', '~> 5.0.0'
+  s.add_dependency 'rack-rewrite', '~> 1.5.0'
 end

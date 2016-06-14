@@ -2,11 +2,13 @@ module Spina
   class Page < ActiveRecord::Base
     include Spina::Partable
 
+    translates :title, :menu_title, :seo_title, :description, :materialized_path
+
     attr_accessor :old_path
 
     has_ancestry orphan_strategy: :adopt # i.e. added to the parent of deleted node
 
-    has_many :page_parts, dependent: :destroy
+    has_many :page_parts, dependent: :destroy, inverse_of: :page
 
     before_validation :ensure_title
     before_validation :ancestry_is_nil
@@ -23,6 +25,10 @@ module Spina
     scope :live, -> { where(draft: false, active: true) }
     scope :in_menu, -> { where(show_in_menu: true) }
     scope :active, -> { where(active: true) }
+    scope :not_active, -> { where(active: false) }
+    scope :by_name, ->(name) { where(name: name) }
+    scope :not_by_config_theme, ->(theme) { where.not(view_template: theme.view_templates.map { |h| h[:name] }) }
+    scope :by_config_theme, ->(theme) { where(view_template: theme.view_templates.map { |h| h[:name] }) }
 
     alias_attribute :page_part, :part
     alias_attribute :parts, :page_parts
@@ -74,9 +80,22 @@ module Spina
 
     def set_materialized_path
       self.old_path = materialized_path
-      self.materialized_path = generate_materialized_path
+      self.materialized_path = localized_materialized_path
       self.materialized_path += "-#{self.class.where(materialized_path: materialized_path).count}" if self.class.where(materialized_path: materialized_path).where.not(id: id).count > 0
       materialized_path
+    end
+
+    def cache_key
+      super + "_" + Globalize.locale.to_s
+    end
+
+    def view_template_config(theme)
+      view_template_name = view_template.presence || 'show'
+      theme.view_templates.find { |template| template[:name] == view_template_name }
+    end
+
+    def full_materialized_path
+      File.join(Spina::Engine.routes.url_helpers.root_path, materialized_path)
     end
 
     private
@@ -85,18 +104,19 @@ module Spina
       RewriteRule.create(old_path: old_path, new_path: materialized_path) if old_path != materialized_path
     end
 
-    def generate_materialized_path
-      if self.name == 'homepage'
-        "/"
+    def localized_materialized_path
+      if I18n.locale == I18n.default_locale
+        generate_materialized_path.prepend('/')
       else
-        case self.depth
-        when 0
-          "/#{url_title}"
-        when 1
-          "/#{self.parent.url_title}/#{url_title}"
-        when 2
-          "/#{self.parent.parent.url_title}/#{self.parent.url_title}/#{url_title}"
-        end
+        generate_materialized_path.prepend("/#{I18n.locale}/")
+      end
+    end
+
+    def generate_materialized_path
+      if root?
+        name == 'homepage' ? '' : "#{url_title}"
+      else
+        ancestors.collect(&:url_title).append(url_title).join('/')
       end
     end
 

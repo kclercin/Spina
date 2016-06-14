@@ -5,8 +5,8 @@
         %td
           = Spina::Account.human_attribute_name(:theme)
         %td
-          .select-dropdown.account-theme{data: {layout_parts: current_theme.config.layout_parts.map{|layout_part| layout_part[:name]}}}
-            - options = options_for_select(Spina.themes.map { |theme| [theme.to_s, theme.to_s, {'data-layout-parts' => theme.config.layout_parts.map{|layout_part| layout_part[:name] }}] }, current_account.theme)
+          .select-dropdown.account-theme{data: {layout_parts: current_theme.layout_parts.map{|layout_part| layout_part[:name]}}}
+            - options = options_for_select(::Spina::Theme.all.map { |theme| [theme.name, theme.name, {'data-layout-parts' => theme.layout_parts.map{|layout_part| layout_part[:name] }}] }, current_account.theme)
             = f.select :theme, options
       %tr
         %td
@@ -15,17 +15,17 @@
           = image_tag current_account.logo
           = f.file_field :logo
 
-      = f.fields_for :layout_parts do |layout_part_form|
-        %tr.layout-part{data: {name: layout_part_form.object.name}}
+      = f.fields_for :layout_parts do |ff|
+        %tr.layout-part{data: {name: ff.object.name}}
           %td
-            = layout_part_form.object.title
+            = ff.object.title
           %td
-            = layout_part_form.hidden_field :id
-            = layout_part_form.hidden_field :title
-            = layout_part_form.hidden_field :layout_partable_type
-            = layout_part_form.hidden_field :name
+            = ff.hidden_field :id
+            = ff.hidden_field :title
+            = ff.hidden_field :layout_partable_type
+            = ff.hidden_field :name
 
-            = render partial: "spina/admin/layout_partables/#{layout_part_form.object.layout_partable_type.demodulize.underscore}_form", object: layout_part_form
+            = render "spina/admin/layout_partables/#{ partable_type_partial_namespace(ff.object.layout_partable_type) }/form", f: ff
 
   %button.button.button-primary{type: 'submit', data: {icon: 'o'}}
     = icon('check')

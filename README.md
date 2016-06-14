@@ -26,6 +26,19 @@ The installer will help you setup your first user.
 
 Then start `rails s` and access your admin panel at `/admin`.
 
+## Upgrading from 0.8 to 0.9
+
+Theme configuration changed to:
+
+```ruby
+# config/initializers/themes/default.rb
+Spina::Theme.register do |theme|
+# Theme config
+end
+```
+
+Check out [config/initializers/themes/default.rb](https://github.com/denkGroot/Spina/blob/master/lib/generators/spina/templates/config/initializers/themes/default.rb) for an example.
+
 ## Upgrading from 0.7 to 0.8
 
 Spina-specific configuration moved from `Spina::Engine.config` to just `Spina.config`.
@@ -67,42 +80,36 @@ Spina uses an initializer to create the basic building blocks of your page. Ther
 When you install Spina, you will see the following in `config/initializers/themes/default.rb`
 
 ```ruby
-module Spina
-  module DefaultTheme
-    include ::ActiveSupport::Configurable
+::Spina::Theme.register do |theme|
 
-    config_accessor :title, :page_parts, :view_templates, :layout_parts, :custom_pages, :plugins, :structures
+  theme.name = 'default'
+  theme.title = 'Default Theme'
 
-    self.title = "Default theme"
+  theme.page_parts = [{
+    name:             'content',
+    title:            'Content',
+    partable_type:    'Spina::Text'
+  }]
 
-    self.page_parts = [{
-      name: 'content',
-      title: 'Content',
-      page_partable_type: "Spina::Text"
-    }]
+  theme.view_templates = [{
+    name:       'homepage',
+    title:      'Homepage',
+    page_parts: ['content']
+  }, {
+    name: 'show',
+    title:        'Default',
+    description:  'A simple page',
+    usage:        'Use for your content',
+    page_parts:   ['content']
+  }]
 
-    self.structures = []
-    self.layout_parts = []
-    self.custom_pages = []
-    self.plugins = []
+  theme.custom_pages = [{
+    name:           'homepage',
+    title:          'Homepage',
+    deletable:      false,
+    view_template:  'homepage'
+  }]
 
-    self.view_templates = {
-      'homepage' => {
-        title: 'Homepage',
-        page_parts: ['content']
-      },
-      'show' => {
-        title: 'Default',
-        description: 'A simple page',
-        usage: 'Use for your content',
-        page_parts: ['content']
-      }
-    }
-
-    self.custom_pages = [
-      { name: 'homepage', title: 'Homepage', deletable: false, view_template: 'homepage' }
-    ]
-  end
 end
 ```
 
@@ -113,10 +120,15 @@ Spina represents each building block of your page, called a 'page part,' as a ha
 Let's say I wanted to add another text box below this called `portfolio`. First I would add another hash to the `self.page_parts` array like so:
 
 ```ruby
-self.page_parts = [
-  { name: 'content', title: 'Content', page_partable_type: "Spina::Text" },
-  { name: 'portfolio', title: 'Portfolio', page_partable_type: "Spina::Text" } # added this second hash
-]
+theme.page_parts = [{
+  name:             'content',
+  title:            'Content',
+  partable_type:    'Spina::Text'
+}, {
+  name:             'portfolio', # added this hash
+  title:            'Portfolio',
+  partable_type:    'Spina::Text'
+}]
 ```
 
 #### Add it to the view template
@@ -124,18 +136,17 @@ self.page_parts = [
 Now, we need to update the `self.view_templates` hash next. These view templates provide customization for the different views you might want. For example, you may have a 'blog' view or an 'about' view which add different page parts. For this example we will add the portfolio part into the 'Default' view template.
 
 ```ruby
-self.view_templates = {
-  'homepage' => {
-    title: 'Homepage',
-    page_parts: ['content']
-  },
-  'show' => {
-    title: 'Default',
-    description: 'A simple page',
-    usage: 'Use for your content',
-    page_parts: ['content', 'portfolio'] # added 'portfolio' here.
-  }
-}
+theme.view_templates = [{
+  name:       'homepage',
+  title:      'Homepage',
+  page_parts: ['content']
+}, {
+  name:         'show',
+  title:        'Default',
+  description:  'A simple page',
+  usage:        'Use for your content',
+  page_parts:   ['content', 'portfolio'] # added 'portfolio'
+}]
 ```
 
 #### Add it to the view
@@ -167,6 +178,10 @@ The views for these templates are stored in `app/views/default/pages`.
 ## Custom pages
 
 You can define custom pages for your theme that will be generated when bootstrapping your website. You can define whether or not they're deletable. By default Spina creates a custom page named Homepage which is not deletable.
+
+# Contributing
+
+Check our [Contributing Guide](CONTRIBUTING.md) for instructions on how to help the project.
 
 # License
 

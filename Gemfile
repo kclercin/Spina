@@ -8,11 +8,12 @@ group :development, :test do
   gem 'quiet_assets'
   gem 'letter_opener'
   gem 'brakeman'
-  gem 'spina-template', github: 'denkGroot/Spina-template'
+  gem 'spina-template'
   gem 'bcrypt'
   gem 'minitest-reporters'
   gem 'guard'
   gem 'guard-minitest'
   gem 'codeclimate-test-reporter', require: nil
   gem 'figaro'
+  gem 'appraisal'
 end

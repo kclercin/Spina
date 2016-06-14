@@ -9,7 +9,6 @@ Spina::Engine.routes.draw do
         get :style
         get :analytics
         get :social
-        get :aviary
       end
     end
 
@@ -57,37 +56,22 @@ Spina::Engine.routes.draw do
         get :link
       end
     end
-
-    resources :inquiries, only: [:index, :show, :destroy] do
-      collection do
-        get :inbox
-        get :spam
-      end
-      member do
-        get :inbox_show
-        patch :mark_as_read
-        patch :unmark_spam
-      end
-    end
   end
-
-  # Inquiries
-  resources :inquiries
 
   # Sitemap
   resource :sitemap
 
   # Robots.txt
-  get '/robots', to: 'pages#robots', format: :txt
+  get '/robots', to: 'pages#robots', constraints: { format: 'txt' }
 
   # Frontend
   root to: "pages#homepage"
 
-  # get ':materialized_pathroot/:subpage/:id' => "pages#show", as: "third_level_page"
-  # get ':root/:id' => "pages#show", as: "subpage"
+  # Pages
+  get '/:locale/*id' => 'pages#show', constraints: {locale: /#{Spina.config.locales.join('|')}/ }
+  get '/:locale/' => 'pages#homepage', constraints: {locale: /#{Spina.config.locales.join('|')}/ }
   get '/*id' => 'pages#show', as: "page", controller: 'pages', constraints: lambda { |request|
     !(Rails.env.development? && request.env['PATH_INFO'].starts_with?('/rails/'))
   }
 
 end
-

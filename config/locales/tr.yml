@@ -33,20 +33,6 @@ tr:
       documents: Belgeler
       photos: Resimler
 
-    inquiries:
-      title: Mesajlar
-      all: Tüm mesajlar
-      all_description: Tüm mesajlarınız
-      delete_confirmation: "<strong>%{subject}</strong> başlıklı mesajı silmek istediğinizden emin misiniz?"
-      empty: Henüz hiç mesajınız bulunmuyor
-      empty_inbox: Gelen kutusu boş
-      empty_spam: Spam olarak işaretli mesaj bulunmuyor
-      inbox: Gelen kutusu
-      inbox_description: Yeni gelen mesajlarınız
-      mark_as_read: Okundu olarak işaretle
-      no_spam: Spam değil
-      spam: Spam
-
     pages:
       new: Yeni sayfa
       create_page: "Yeni %{template}"
@@ -92,9 +78,6 @@ tr:
       account: Genel
       account_description: Kişisel seçenekleriniz
       account_save: Seçenekleri kaydet
-      aviary: Aviary
-      aviary_description: Aviary seçenekleriniz
-      aviary_save: Seçenekleri kaydet
       style: Görünüm
       style_description: Size uyan bir tema seçin
       style_save: Görünümü kaydet
@@ -113,12 +96,16 @@ tr:
       insert: 'Belge ekle'
       insert_multiple: 'Çoklu belge ekle'
 
+    media_library:
+      photos: Resimler
+      attachments: Belgeler
+
   activerecord:
     models:
-      spina/page: 
+      spina/page:
         one: Sayfa
         other: Sayfalar
-      spina/user: 
+      spina/user:
         one: Kullanıcı
         other: Kullanıcılar
       spina/photo:
@@ -127,9 +114,6 @@ tr:
       spina/attachment:
         one: Belge
         other: Belgeler
-      spina/inquiry:
-        one: Mesaj
-        other: Mesajlar
 
     attributes:
       spina/account:
@@ -156,12 +140,6 @@ tr:
         created_at: Oluşturulma zamanı
         name: Dosya adı
         size: Boyut
-
-      spina/inquiries:
-        email: Eposta
-        name: Gönderen
-        message: Mesaj
-        phone: Telefon
 
       spina/page:
         title: Başlık

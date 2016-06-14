@@ -33,20 +33,6 @@ it:
       documents: Documenti
       photos: Immagini
 
-    inquiries:
-      title: Messaggi
-      all: Tutti i messaggi
-      all_description: Tutti i messaggi
-      delete_confirmation: "Sei sicuro di voler eliminare il messaggio <strong>%{subject}</strong>?"
-      empty: Non hai ricevuto nessun messaggio
-      empty_inbox: Inbox vuota
-      empty_spam: Non hai messaggi segnati come spam
-      inbox: Inbox
-      inbox_description: Messaggi in arrivo
-      mark_as_read: Segna come letto
-      no_spam: No spam
-      spam: Spam
-
     pages:
       new: Nuova pagina
       create_page: "Nuova %{template}"
@@ -92,9 +78,6 @@ it:
       account: Generale
       account_description: Impostazioni personali
       account_save: Salva impostazioni
-      aviary: Aviary
-      aviary_description: Impostazioni per aviary
-      aviary_save: Salva impostazioni
       style: Stile
       style_description: Scegli un tema adatto al tuo brand
       style_save: Salva stile
@@ -113,6 +96,10 @@ it:
       insert: 'Inserisci documento'
       insert_multiple: 'Inserisci documenti'
 
+    media_library:
+      photos: Immagini
+      attachments: Documenti
+
   activerecord:
     models:
       spina/page:
@@ -127,9 +114,6 @@ it:
       spina/attachment:
         one: Documento
         other: Documenti
-      spina/inquiry:
-        one: Messaggio
-        other: Messaggi
 
     attributes:
       spina/account:
@@ -156,12 +140,6 @@ it:
         created_at: Creato il
         name: Nome file
         size: Dimensione
-
-      spina/inquiries:
-        email: Email
-        name: Da
-        message: Messaggio
-        phone: Telefono
 
       spina/page:
         title: Titolo

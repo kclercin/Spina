@@ -1,6 +1,6 @@
 module Spina
   class Attachment < ActiveRecord::Base
-    
+
     has_one :page_part, as: :page_partable
     has_and_belongs_to_many :attachment_collections, join_table: 'spina_attachment_collections_attachments'
 
@@ -22,6 +22,11 @@ module Spina
       else
         old_update_attributes(attributes)
       end
+    end
+
+    def self.order_by_ids(ids)
+      sql = sanitize_sql_for_conditions({id: ids})
+      order("CASE WHEN #{sql} THEN 0 ELSE 1 END")
     end
 
   end

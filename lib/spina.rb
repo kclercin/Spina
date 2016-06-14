@@ -1,47 +1,43 @@
 require 'spina/engine'
+require 'spina/railtie'
 require 'spina/template'
 
 module Spina
 
   include ActiveSupport::Configurable
 
-  config_accessor :backend_path, :storage
+  PLUGINS = []
+  THEMES = []
+
+  config_accessor :backend_path, :storage, :max_page_depth, :locales
 
   self.backend_path = 'admin'
 
   self.storage = :file
 
+  self.max_page_depth = 5
+
+  self.locales = [I18n.default_locale]
+
   class << self
 
-    @@themes = []
-    @@plugins = []
-
-    def register_theme(theme)
-      @@themes << theme
-    end
-
-    def theme(theme_name)
-      @@themes.find { |theme| theme.name == theme_name }
-    end
-
-    def themes
-      @@themes
-    end
-
-    def register_plugin(plugin)
-      @@plugins << plugin
-    end
-
-    def plugin(plugin_name)
-      @@plugins.find { |plugin| plugin.name == plugin_name }
-    end
-
-    def plugins(plugin_type = :all)
-      case plugin_type
-      when :website_resource
-        @@plugins.find_all { |plugin| plugin.config.plugin_type == 'website_resource' }
-      else
-        @@plugins
+    def register_theme(deprecated_theme)
+      warn "[DEPRECATION] `register_theme` is deprecated. Please use `::Spina::Theme.register` instead."
+      Spina::Theme.register do |theme|
+        theme.name            = deprecated_theme.name
+        theme.title           = deprecated_theme.config.title
+        theme.page_parts      = deprecated_theme.config.page_parts
+        theme.view_templates  = deprecated_theme.config.view_templates.inject([]) do |a, (k, v)|
+          v[:name] = k
+          a << v
+        end
+        theme.layout_parts    = deprecated_theme.config.layout_parts
+        theme.custom_pages    = deprecated_theme.config.custom_pages
+        theme.plugins         = deprecated_theme.config.plugins
+        theme.structures      = deprecated_theme.config.structures.inject([]) do |a, (k, v)|
+          a << { name: k, structure_parts: v }
+        end
+        theme.public_theme    = deprecated_theme.config.public_theme
       end
     end
 

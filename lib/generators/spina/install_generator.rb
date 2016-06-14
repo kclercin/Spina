@@ -4,15 +4,23 @@ module Spina
     source_root File.expand_path("../templates", __FILE__)
 
     def create_initializer_file
+      return if Rails.env.production?
       template 'config/initializers/spina.rb'
     end
 
+    def create_carrierwave_initializer_file
+      return if Rails.env.production?
+      template 'config/initializers/carrierwave.rb'
+    end
+
     def add_route
+      return if Rails.env.production?
       return if Rails.application.routes.routes.detect { |route| route.app.app == Spina::Engine }
       route "mount Spina::Engine => '/'"
     end
 
     def copy_migrations
+      return if Rails.env.production?
       rake 'spina:install:migrations'
     end
 
@@ -22,7 +30,8 @@ module Spina
 
     def create_account
       return if Account.exists? && !no?('An account already exists. Skip? [Yn]')
-      name = ask('What would you like to name your website?')
+      name = Account.first.try(:name) || 'MySite'
+      name = ask("What would you like to name your website? [#{name}]").presence || name
       account = Account.first_or_create.update_attribute(:name, name)
     end
 
@@ -31,24 +40,31 @@ module Spina
       return if account.theme.present? && !no?("Theme '#{account.theme} is set. Skip? [Yn]")
 
       theme = begin
-                theme = account.theme || 'default'
-                theme = ask("What theme do you want to use? (default/demo) [#{theme}]").presence || theme
-              end until theme.in? ['default', 'demo']
+                theme = account.theme || themes.first
+                theme = ask("What theme do you want to use? (#{themes.join('/')}) [#{theme}]").presence || theme
+              end until theme.in? themes
 
       account.update_attribute(:theme, theme)
-
-      template "config/initializers/themes/#{theme}.rb"
-      directory "app/assets/stylesheets/#{theme}"
-      directory "app/views/#{theme}"
-      directory "app/views/layouts/#{theme}"
-      directory "app/views/layouts/#{theme}"
     end
 
+    def copy_template_files
+      theme = Account.first.theme
+      if theme.in? ['default', 'demo']
+        template "config/initializers/themes/#{theme}.rb"
+        directory "app/assets/stylesheets/#{theme}"
+        directory "app/views/#{theme}"
+        directory "app/views/layouts/#{theme}"
+      end
+      Spina::THEMES.clear
+      Dir[Rails.root.join('config', 'initializers', 'themes', '*.rb')].each { |file| load file }
+    end
 
     def create_user
       return if User.exists? && !no?('A user already exists. Skip? [Yn]')
-      email = ask('Please enter an email address for your first user:')
-      password = ask('Create a temporary password:', echo: false)
+      email = 'admin@domain.com'
+      email = ask("Please enter an email address for your first user: [#{email}]").presence || email
+      password = 'password'
+      password = ask("Create a temporary password: [#{password}]", echo: false).presence || password
       User.create name: 'admin', email: email, password: password, admin: true
     end
 
@@ -59,11 +75,10 @@ module Spina
     def seed_demo_content
       theme_name = Account.first.theme
       if theme_name == 'demo' && !no?('Seed example content? [Yn]')
-
-        current_theme = ::Spina.themes.find { |theme| theme.name == theme_name }
+        current_theme = ::Spina::Theme.find_by_name(theme_name)
         if (page = Spina::Page.find_by(name: 'demo'))
           page.page_parts.clear
-          parts = current_theme.config.page_parts.map { |page_part| page.page_part(page_part) }
+          parts = current_theme.page_parts.map { |page_part| page.page_part(page_part) }
           parts.each do |part|
             case part.partable_type
             when 'Spina::Line' then part.partable.content = 'This is a single line'
@@ -71,9 +86,6 @@ module Spina
             when 'Spina::Photo' then part.partable.remote_file_url = 'https://unsplash.it/300/200?random'
             when 'Spina::PhotoCollection'
               5.times { part.partable.photos.build(remote_file_url: 'https://unsplash.it/300/200?random') }
-            # when 'Spina::Structure'
-            #   part.partable.structure_items.build({ name: 'title', title: 'Title', structure_partable_type: 'Spina::Line' })
-            #   part.partable.structure_items.build({ name: 'description', title: 'Description', structure_partable_type:  'Spina::Text' })
             when 'Spina::Color' then part.partable.content = '#6865b4'
             end
           end
@@ -81,6 +93,27 @@ module Spina
         end
       end
     end
+
+    def feedback
+      puts
+      puts '    Your Spina site has been succesfully installed! '
+      puts
+      puts '    Restart your server and visit http://localhost:3000 in your browser!'
+      puts "    The admin backend is located at http://localhost:3000/#{Spina.config.backend_path}."
+      puts
+      puts "    Site name      :  #{Account.first.name}"
+      puts "    Active Theme   :  #{Account.first.theme}"
+      puts "    User Email     :  #{User.first.email}"
+      puts "    User Password  :  'password' by default"
+      puts
+    end
+
+    private
+
+      def themes
+        themes = Spina::Theme.all.map(&:name)
+        themes | ['default', 'demo']
+      end
 
   end
 end

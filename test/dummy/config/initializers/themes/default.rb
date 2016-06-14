@@ -1,47 +1,31 @@
-module Spina
-  module DefaultTheme
-    include ::ActiveSupport::Configurable
+::Spina::Theme.register do |theme|
 
-    config_accessor :title, :page_parts, :view_templates, :layout_parts, :custom_pages, :plugins, :structures
+  theme.name = 'default'
+  theme.title = 'Default Theme'
 
-    self.title = 'Default theme'
+  theme.page_parts = [{
+    name:           'text',
+    title:          'Text',
+    partable_type:  'Spina::Text'
+  }]
 
-    self.page_parts = [{
-      name:               'text',
-      title:              'Text',
-      page_partable_type: 'Spina::Text'
-    }]
+  theme.view_templates = [{
+    name:       'homepage',
+    title:      'Homepage',
+    page_parts: ['text']
+  }, {
+    name: 'show',
+    title:        'Default',
+    description:  'A simple page',
+    usage:        'Use for your content',
+    page_parts:   ['text']
+  }]
 
-    self.structures = {}
+  theme.custom_pages = [{
+    name:           'homepage',
+    title:          'Homepage',
+    deletable:      false,
+    view_template:  'homepage'
+  }]
 
-    self.layout_parts = []
-
-    self.view_templates = {
-      'homepage' => {
-        title:      'Homepage',
-        page_parts: ['text']
-      },
-      'show' => {
-        title:        'Default',
-        description:  'A simple page',
-        usage:        'Use for your content',
-        page_parts:   ['text']
-      }
-    }
-
-    self.custom_pages = [{
-      name:           'homepage',
-      title:          'Homepage',
-      deletable:      false,
-      view_template:  'homepage'
-    }]
-
-    self.plugins = []
-
-  end
 end
-
-theme = Spina::Theme.new
-theme.name = 'default'
-theme.config = Spina::DefaultTheme.config
-Spina.register_theme(theme)

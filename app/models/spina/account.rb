@@ -18,15 +18,14 @@ module Spina
     end
 
     def content(layout_part)
-      layout_part = layout_parts.where(name: layout_part).first
-      layout_part.try(:content)
+      layout_parts.find_by(name: layout_part).try(:content)
     end
 
     def self.serialized_attr_accessor(*args)
       args.each do |method_name|
         eval "
           def #{method_name}
-            (self.preferences || {})[:#{method_name}]
+            self.preferences.try(:[], :#{method_name})
           end
 
           def #{method_name}=(value)
@@ -37,13 +36,13 @@ module Spina
       end
     end
 
-    serialized_attr_accessor :google_analytics, :google_site_verification, :facebook, :twitter, :google_plus, :theme, :aviary_api_key, :aviary_language, :ngrok_address
+    serialized_attr_accessor :google_analytics, :google_site_verification, :facebook, :twitter, :google_plus, :theme
 
     private
 
     def bootstrap_website
-      theme = ::Spina.theme(self.theme)
-      bootstrap_pages(theme) if theme
+      theme_config = ::Spina::Theme.find_by_name(theme)
+      bootstrap_pages(theme_config) if theme_config
     end
 
     def bootstrap_pages(theme)
@@ -53,17 +52,19 @@ module Spina
     end
 
     def find_or_create_custom_pages(theme)
-      theme.config.custom_pages.each do |page|
-        Page.where(name: page[:name]).first_or_create(title: page[:title]).update_columns(view_template: page[:view_template], deletable: page[:deletable])
+      theme.custom_pages.each do |page|
+        Page.by_name(page[:name])
+            .first_or_create(title: page[:title])
+            .update_columns(view_template: page[:view_template], deletable: page[:deletable])
       end
     end
 
     def deactivate_unused_view_templates(theme)
-      Page.where(active: true).where.not(view_template: theme.config.view_templates.keys).update_all(active: false)
+      Page.active.not_by_config_theme(theme).update_all(active: false)
     end
 
     def activate_used_view_templates(theme)
-      Page.where(active: false).where(view_template: theme.config.view_templates.keys).update_all(active: true)
+      Page.not_active.by_config_theme(theme).update_all(active: true)
     end
 
   end
